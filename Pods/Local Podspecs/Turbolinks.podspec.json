@@ -1,0 +1,23 @@
+{
+  "name": "Turbolinks",
+  "version": "3.0.0",
+  "summary": "Turbolinks for iOS",
+  "homepage": "http://github.com/turbolinks/turbolinks-ios",
+  "license": "MIT",
+  "authors": {
+    "Sam Stephenson": "sam@basecamp.com",
+    "Jeffrey Hardy": "jeff@basecamp.com",
+    "Zach Waugh": "zach@basecamp.com"
+  },
+  "platforms": {
+    "ios": "8.0"
+  },
+  "source": {
+    "git": "git@github.com:turbolinks/turbolinks-ios.git",
+    "tag": "v3.0.0"
+  },
+  "source_files": "Turbolinks/*.swift",
+  "resources": "Turbolinks/*.js",
+  "frameworks": "WebKit",
+  "requires_arc": true
+}

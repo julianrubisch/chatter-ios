@@ -1,0 +1,6 @@
+framework module Pods_chatter_iosTests {
+  umbrella header "Pods-chatter-iosTests-umbrella.h"
+
+  export *
+  module * { export * }
+}

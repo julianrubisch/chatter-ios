@@ -1,0 +1,6 @@
+framework module Turbolinks {
+  umbrella header "Turbolinks-umbrella.h"
+
+  export *
+  module * { export * }
+}

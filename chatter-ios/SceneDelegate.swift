@@ -8,11 +8,18 @@
 
 import UIKit
 import SwiftUI
+import Turbolinks
+import WebKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
-
+    var navigationController = UINavigationController()
+    lazy var session: Session = {
+        let configuration = WKWebViewConfiguration()
+        configuration.applicationNameForUserAgent = "Chatter iOS"
+        return Session(webViewConfiguration: configuration)
+    }()
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
@@ -25,40 +32,38 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Use a UIHostingController as window root view controller.
         if let windowScene = scene as? UIWindowScene {
             let window = UIWindow(windowScene: windowScene)
-            window.rootViewController = UIHostingController(rootView: contentView)
+            window.rootViewController = navigationController
             self.window = window
+            visit(URL: NSURL(string: "http://localhost:3000")!)
+            self.session.delegate = self
             window.makeKeyAndVisible()
         }
     }
 
-    func sceneDidDisconnect(_ scene: UIScene) {
-        // Called as the scene is being released by the system.
-        // This occurs shortly after the scene enters the background, or when its session is discarded.
-        // Release any resources associated with this scene that can be re-created the next time the scene connects.
-        // The scene may re-connect later, as its session was not neccessarily discarded (see `application:didDiscardSceneSessions` instead).
+    func visit(URL: NSURL, action: Action = .Advance) {
+        let viewController = VisitableViewController(url: URL as URL)
+        
+        if action == .Advance {
+            navigationController.pushViewController(viewController, animated: true)
+        } else if action == .Replace {
+            if navigationController.viewControllers.count == 1 {
+            navigationController.setViewControllers([viewController], animated: false)
+            } else {
+                navigationController.popViewController(animated: false)
+                navigationController.pushViewController(viewController, animated: false)
+            }
+        }
+        session.visit(viewController)
     }
-
-    func sceneDidBecomeActive(_ scene: UIScene) {
-        // Called when the scene has moved from an inactive state to an active state.
-        // Use this method to restart any tasks that were paused (or not yet started) when the scene was inactive.
-    }
-
-    func sceneWillResignActive(_ scene: UIScene) {
-        // Called when the scene will move from an active state to an inactive state.
-        // This may occur due to temporary interruptions (ex. an incoming phone call).
-    }
-
-    func sceneWillEnterForeground(_ scene: UIScene) {
-        // Called as the scene transitions from the background to the foreground.
-        // Use this method to undo the changes made on entering the background.
-    }
-
-    func sceneDidEnterBackground(_ scene: UIScene) {
-        // Called as the scene transitions from the foreground to the background.
-        // Use this method to save data, release shared resources, and store enough scene-specific state information
-        // to restore the scene back to its current state.
-    }
-
 
 }
 
+extension SceneDelegate: SessionDelegate {
+    func session(_ session: Session, didFailRequestForVisitable visitable: Visitable, withError error: NSError) {
+        // TODO handle errors
+    }
+    
+    func session(_ session: Session, didProposeVisitToURL URL: URL, withAction action: Action) {
+        visit(URL: URL as NSURL, action: action)
+    }
+}
